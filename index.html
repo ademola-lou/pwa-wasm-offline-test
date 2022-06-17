@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="/index.css">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="canonical" href="https://pwa.glitch.me/">
+  <link rel="shortcut icon" href="https://cdn.glitch.com/355b9f14-b08b-4590-9270-46454889b15e%2Ffavicon.ico?1495985662065">
+  <script src="/index.js"></script>
+  <script>
+    // This is just to force HTTPS (can't do it statically on glitch)
+    if(location.protocol == 'http:') location.protocol = 'https:';
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker registered', reg))
+        .catch(err => console.error('Service Worker **not** registered', err));
+    }
+    else {
+      console.warn('Service Worker not supported in this browser');
+    }    
+  </script>
+  <title>Simplest PWA</title>
+  <meta name="theme-color" content="lightblue">
+</head>
+<body>
+  <h1>
+    Welcome to possibly the simplest progressive web app
+  </h1>
+  <p>
+    It
+  </p>
+  <ol>
+    <li>Works offline; the assets are installed when the service worker is registered; and fetched from cache or network</li>
+    <li>Is installable; the manifest defines what to launch and how it should appear on the users system</li>
+    <li>Is just this.</li>
+  </ol>
+  <p>
+    Check out the code <a href="http://glitch.com/edit/#!/pwa">on glitch</a>.
+  </p>
+  <script>
+            var Module = {
+                print: function(text) {
+                    console.log(text);
+                },
+
+                printErr: function(text) {
+                    console.error(text);
+                },
+                onRuntimeInitialized: function() {
+                    const positions = [
+                        [0, 0, 0],
+                        [1, 0, 0],
+                        [1, 1, 0],
+                        [0, 1, 0]
+                    ].flat();
+                    const faces = [
+                        [0, 1, 2, 3]
+                    ]
+                    const faceDimension = faces.map(cell => cell.length);
+                    const faceLen = faces.length;
+
+                    console.log("this is face dimension", faceDimension);
+
+                    const _buildVertices = ccallArrays("buildVertices", "number", ["array"], [positions, positions.length])
+                    const _buildFace = ccallArrays("buildFaces", "number", ["array", "array", "number", "number"], [faces.flat(), faceDimension, faceLen, false], false, {heapIn: "HEAP32"})
+                    
+
+                    const outputfacesize = Module._get_face_size();
+                    const outputfdsize = Module._get_facedim_size();
+                    const outputfaceDimension = ccallArrays("print_faces_dimensions", "array", [], [], false, {heapIn: "HEAP32", heapOut: "HEAP32", returnArraySize: outputfdsize})
+                    const outputface = ccallArrays("print_faces", "array", [], [], false, {heapIn: "HEAP32", heapOut: "HEAP32", returnArraySize: outputfacesize})
+
+                    const outputvnormals = ccallArrays("print_vertex_normals", "array", [], [], false, {returnArraySize: positions.length});
+
+                    console.log("testing result: ", _buildVertices, _buildFace, "___", outputfaceDimension,"___", outputface);
+                    console.log("these are the vertex normals", outputvnormals);
+                }
+            };
+        </script>
+        <script async type="text/javascript" src="myviewer.js"></script>
+</body>
+</html>
